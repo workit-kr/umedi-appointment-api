@@ -2,7 +2,7 @@ name: deploy lambda function
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   umedi-hospital-api:
