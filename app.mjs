@@ -52,6 +52,7 @@ export const handler = async (event) => {
         last_name,
         phone,
         email,
+        gender,
         date_of_birth,
         claim_yn,
         to_char(candidate_dt1 at time zone 'Asia/Seoul', 'YYYY-MM-DD AM HH12:MI') as candidate_dt1,
