@@ -53,7 +53,7 @@ export const handler = async (event) => {
       case "PUT":
         const body = JSON.parse(event.body)
         resp = addAppointment(body)
-        console.log(resp.statusCode)
+        console.log(resp)
 
         if (resp.statusCode == 200) {
           const payload = {
