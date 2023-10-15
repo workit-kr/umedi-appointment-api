@@ -15,28 +15,6 @@ await pool.connect();
 const key = process.env.ENCRYPTION_KEY;
 const subTask = process.env.SUBTASK_LAMBDA;
 
-const lambda = new aws.Lambda({
-  region: process.env.REGION
-});
-
-
-const async_lambda_invoke = async ({ payload }) => {
-  console.log(process.env.REGION);
-  console.log(`invoking function: ${subTask}`);
-  lambda.invoke({
-    FunctionName: subTask,
-    InvocationType: 'Event',
-    Payload: JSON.stringify(payload)
-  }, function(error, data) {
-    if (error) {
-      console.info(error);
-    } else {
-      console.info(data);
-    }
-  });
-};
-
-
 export const handler = async (event) => {
     let resp = {};
   
@@ -63,7 +41,23 @@ export const handler = async (event) => {
             "insurance_imgs": body.insurance_imgs,
             "additional_imgs": body.additional_imgs
           }
-          await async_lambda_invoke(payload)
+
+          const lambda = new aws.Lambda({
+            region: process.env.REGION
+          });
+
+          lambda.invoke({
+            FunctionName: subTask,
+            InvocationType: 'Event',
+            logType: 'tail',
+            Payload: JSON.stringify(payload)
+          }, function(error, data) {
+            if (error) {
+              console.error(error)
+            } else {
+              console.log(`invoke success - ${subTask}`)
+            }
+          });
         }
         break;
       
