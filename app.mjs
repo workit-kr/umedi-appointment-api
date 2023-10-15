@@ -44,6 +44,7 @@ export const handler = async (event) => {
 
         if (resp.statusCode == 200) {
           console.log("upload image")
+          console.log(body.insurance_imgs.length)
           for (let i; i < body.insurance_imgs.length; i++) {
             upload(body.insurance_imgs[i], i);
           }
