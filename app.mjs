@@ -46,7 +46,7 @@ export const handler = async (event) => {
           console.log("upload image")
           console.log(body.insurance_imgs.length)
           for (let i = 0; i < body.insurance_imgs.length; i++) {
-            upload(body.insurance_imgs[i], i, resp.body.appointment_id);
+            await upload(body.insurance_imgs[i], i, resp.body.appointment_id);
           }
         }
         break;
@@ -64,7 +64,7 @@ export const handler = async (event) => {
     return resp
   }
 
-  function upload(data, i, appointment_id) {
+  async function upload(data, i, appointment_id) {
     const params = {
       Bucket: S3_BUCKET,
       Key:`${appointment_id}_${i}.jpg`, // type is not required
@@ -74,8 +74,13 @@ export const handler = async (event) => {
       ContentType: 'image/jpeg' // required. Notice the back ticks
     }
     console.log(`upload ${i} image`)
-    const { Location, Key } = s3.putObject(params);
-    console.log(Location)
+    try {
+      const { Location, Key } = await s3.putObject(params).promise();
+      console.log(Location)
+    }
+    catch (error) {
+      console.log(error)
+    }
   }
   
   async function fetchAppointmentList() {
