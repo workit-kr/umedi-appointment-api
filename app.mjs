@@ -44,7 +44,7 @@ export const handler = async (event) => {
 
         if (resp.statusCode == 200) {
           for (let i; i < body.insurance_imgs.length; i++) {
-            await upload(body.insurance_imgs[i]);
+            await upload(body.insurance_imgs[i], i);
           }
         }
         break;
@@ -62,15 +62,16 @@ export const handler = async (event) => {
     return resp
   }
 
-  async function upload(data) {
+  async function upload(data, i) {
     const params = {
       Bucket: S3_BUCKET,
-      Key:`${resp.body.appointment_id}.jpg`, // type is not required
+      Key:`${resp.body.appointment_id}_${i}.jpg`, // type is not required
       Body: data,
+      ACL: 'public-read',
       ContentEncoding: 'base64', // required
       ContentType: 'image/jpeg' // required. Notice the back ticks
     }
-    const { Location, Key } = await s3.upload(params).promise();
+    const { Location, Key } = await s3.putObject(params).promise();
     console.log(Location)
   }
   
