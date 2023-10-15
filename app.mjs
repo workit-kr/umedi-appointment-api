@@ -52,7 +52,7 @@ export const handler = async (event) => {
       // add appointments
       case "PUT":
         const body = JSON.parse(event.body)
-        resp = await addAppointment(body).promise()
+        resp = await addAppointment(body)
         console.log(resp)
 
         if (resp.statusCode == 200) {
