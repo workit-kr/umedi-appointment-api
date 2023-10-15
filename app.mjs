@@ -26,7 +26,7 @@ const async_lambda_invoke = async ({ payload }) => {
   console.log(`invoking function: ${subTask}`);
   const result = await lambda
     .invoke({
-      subTask,
+      FunctionName: subTask,
       InvocationType: "Event",
       Payload: JSON.stringify(payload)
     })
