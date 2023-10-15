@@ -46,7 +46,7 @@ export const handler = async (event) => {
           console.log("upload image")
           console.log(body.insurance_imgs.length)
           for (let i = 0; i < body.insurance_imgs.length; i++) {
-            upload(body.insurance_imgs[i], i);
+            upload(body.insurance_imgs[i], i, resp.body.appointment_id);
           }
         }
         break;
@@ -64,10 +64,10 @@ export const handler = async (event) => {
     return resp
   }
 
-  function upload(data, i) {
+  function upload(data, i, appointment_id) {
     const params = {
       Bucket: S3_BUCKET,
-      Key:`${resp.body.appointment_id}_${i}.jpg`, // type is not required
+      Key:`${appointment_id}_${i}.jpg`, // type is not required
       Body: data,
       ACL: 'public-read',
       ContentEncoding: 'base64', // required
