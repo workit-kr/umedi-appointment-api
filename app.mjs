@@ -1,4 +1,5 @@
 import pg from "pg";
+import aws from "aws-sdk";
 
 const { Pool } = pg;
 const pool = new Pool({
@@ -11,7 +12,28 @@ const pool = new Pool({
 await pool.connect();
 
 
-var key = process.env.ENCRYPTION_KEY;
+const key = process.env.ENCRYPTION_KEY;
+const subTask = process.env.SUBTASK_LAMBDA;
+
+const lambda = new aws.Lambda({
+  apiVersion: "2015-03-31",
+  endpoint: `lambda.${process.env.REGION}.amazonaws.com`
+});
+
+
+const async_lambda_invoke = async ({ payload }) => {
+  console.log(process.env.REGION);
+  console.log(`invoking function: ${subTask}`);
+  const result = await lambda
+    .invoke({
+      FunctionName,
+      InvocationType: "Event",
+      Payload: JSON.stringify(payload)
+    })
+    .promise();
+  console.log(`${subTask} invoked`, result);
+};
+
 
 export const handler = async (event) => {
     let resp = {};
@@ -29,7 +51,17 @@ export const handler = async (event) => {
       
       // add appointments
       case "PUT":
-        resp = addAppointment(JSON.parse(event.body))
+        const body = JSON.parse(event.body)
+        resp = addAppointment(body)
+
+        if (resp.statusCode == 200) {
+          const payload = {
+            "appointment_id": resp.body.appointment_id,
+            "insurance_imgs": body.insurance_imgs,
+            "additional_imgs": body.additional_imgs
+          }
+          await async_lambda_invoke(payload)
+        }
         break;
       
       // upload images
