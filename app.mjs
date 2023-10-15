@@ -43,6 +43,7 @@ export const handler = async (event) => {
         console.log(resp)
 
         if (resp.statusCode == 200) {
+          console.log("upload image")
           for (let i; i < body.insurance_imgs.length; i++) {
             upload(body.insurance_imgs[i], i);
           }
@@ -71,6 +72,7 @@ export const handler = async (event) => {
       ContentEncoding: 'base64', // required
       ContentType: 'image/jpeg' // required. Notice the back ticks
     }
+    console.log(params.Bucket)
     const { Location, Key } = s3.putObject(params);
     console.log(Location)
   }
