@@ -23,13 +23,13 @@ const lambda = new aws.Lambda({
 const async_lambda_invoke = async ({ payload }) => {
   console.log(process.env.REGION);
   console.log(`invoking function: ${subTask}`);
-  lambda.invoke({
+  const result = lambda.invoke({
     FunctionName: subTask,
     InvocationType: "RequestResponse",
     LogType: "Tail",
     Payload: JSON.stringify(payload)
-  });
-  console.log(`${subTask} invoked`);
+  }).promise();
+  console.log(`${subTask} invoked`, result);
 };
 
 
