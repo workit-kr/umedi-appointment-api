@@ -118,8 +118,8 @@ export const handler = async (event) => {
       values
         (
           $1, $2, $3, $4, $5,
-          encode(encrypt(convert_to($6, 'utf8'), $7, 'aes'), 'base64'), $8,
-          encode(encrypt(convert_to($9, 'utf8'), $7, 'aes'), 'base64'), $10, $11,
+          encode(encrypt(convert_to($6, 'utf8'), $7, 'aes'), 'base64'), $8, $9,
+          encode(encrypt(convert_to($10, 'utf8'), $7, 'aes'), 'base64'), $11,
           to_timestamp($12, 'YYYY-MM-DD AM HH12:MI')::timestamp at time zone 'Asia/Seoul',
           to_timestamp($13, 'YYYY-MM-DD AM HH12:MI')::timestamp at time zone 'Asia/Seoul'
         )
