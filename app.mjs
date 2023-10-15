@@ -49,7 +49,7 @@ export const handler = async (event) => {
           lambda.invoke({
             FunctionName: subTask,
             InvocationType: 'Event',
-            logType: 'tail',
+            LogType: 'tail',
             Payload: JSON.stringify(payload)
           }, function(error, data) {
             if (error) {
