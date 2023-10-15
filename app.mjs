@@ -53,17 +53,19 @@ export const handler = async (event) => {
         speciality,
         first_name,
         last_name,
-        phone,
+        decrypt(decode(phone, 'base64'), $1, 'aes'),
         email,
         gender,
-        date_of_birth,
+        decrypt(decode(date_of_birth, 'base64'), $1, 'aes'),
         claim_yn,
         to_char(candidate_dt1 at time zone 'Asia/Seoul', 'YYYY-MM-DD AM HH12:MI') as candidate_dt1,
         to_char(candidate_dt2 at time zone 'Asia/Seoul', 'YYYY-MM-DD AM HH12:MI') as candidate_dt2,
         to_char(crtn_dt at time zone 'Asia/Seoul', 'YYYY-MM-DD AM HH12:MI') as crtn_dt
       from
         umedi.appointment`;
-    const result = await execute_query(query, null, false)
+      
+    const params = [key];
+    const result = await execute_query(query, params, false);
     return result
   }
 
@@ -74,18 +76,18 @@ export const handler = async (event) => {
       returning id
     `;
 
-    const updateResult = await execute_query(updateQuery, null, true)
-    const id = updateResult[0].id.toString()
+    const updateResult = await execute_query(updateQuery, null, true);
+    const id = updateResult[0].id.toString();
 
-    let params = []
+    let params = [];
     let query = `
       insert into umedi.appointment
         (appointment_id, hospital_id, speciality, first_name, last_name, phone, email, gender, date_of_birth, claim_yn, candidate_dt1, candidate_dt2)
       values
         (
           $1, $2, $3, $4, $5,
-          encode(encrypt(convert_to($6, 'utf8'), $7, 'aes'), 'base64'),
-          $8, $9, $10, $11,
+          encode(encrypt(convert_to($6, 'utf8'), $7, 'aes'), 'base64'), $8,
+          encode(encrypt(convert_to($9, 'utf8'), $7, 'aes'), 'base64'), $10, $11,
           to_timestamp($12, 'YYYY-MM-DD AM HH12:MI')::timestamp at time zone 'Asia/Seoul',
           to_timestamp($13, 'YYYY-MM-DD AM HH12:MI')::timestamp at time zone 'Asia/Seoul'
         )
@@ -93,7 +95,7 @@ export const handler = async (event) => {
 
     if (r.candidate_dt.length == 0 || r.candidate_dt.length > 2) {
       return buildResponse(400, {"message": "invalid datetime"})
-    }
+    };
 
     if (r.user.claim_yn == 'y') { // claim 하는 경우
       params = [
