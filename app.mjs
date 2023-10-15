@@ -18,8 +18,8 @@ await pool.connect();
 
 
 const key = process.env.ENCRYPTION_KEY;
-const subTask = process.env.SUBTASK_LAMBDA;
 const s3 = new aws.S3({region: process.env.REGION});
+const S3_BUCKET = "umedi-image-bucket"
 
 
 export const handler = async (event) => {
