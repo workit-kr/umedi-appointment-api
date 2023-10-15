@@ -26,12 +26,7 @@ const async_lambda_invoke = async ({ payload }) => {
   lambda.invoke({
     FunctionName: subTask,
     InvocationType: 'Event',
-    Payload: JSON.stringify({
-      path: '/upload',
-      headers: { "Content-Type" : "application/json" },
-      body: JSON.stringify(payload),
-      httpMethod: "POST"
-    }) // pass params
+    Payload: JSON.stringify(payload)
   }, function(error, data) {
     if (error) {
       console.info(error);
