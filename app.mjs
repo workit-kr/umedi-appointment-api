@@ -73,7 +73,7 @@ export const handler = async (event) => {
       ContentEncoding: 'base64', // required
       ContentType: 'image/jpeg' // required. Notice the back ticks
     }
-    console.log(params.Bucket)
+    console.log(`upload ${i} image`)
     const { Location, Key } = s3.putObject(params);
     console.log(Location)
   }
