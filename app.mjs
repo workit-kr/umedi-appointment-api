@@ -16,22 +16,20 @@ const key = process.env.ENCRYPTION_KEY;
 const subTask = process.env.SUBTASK_LAMBDA;
 
 const lambda = new aws.Lambda({
-  apiVersion: "2015-03-31",
-  endpoint: `lambda.${process.env.REGION}.amazonaws.com`
+  region: process.env.REGION
 });
 
 
 const async_lambda_invoke = async ({ payload }) => {
   console.log(process.env.REGION);
   console.log(`invoking function: ${subTask}`);
-  const result = await lambda
-    .invoke({
-      FunctionName: subTask,
-      InvocationType: "Event",
-      Payload: JSON.stringify(payload)
-    })
-    .promise();
-  console.log(`${subTask} invoked`, result);
+  lambda.invoke({
+    FunctionName: subTask,
+    InvocationType: "RequestResponse",
+    LogType: "Tail",
+    Payload: JSON.stringify(payload)
+  });
+  console.log(`${subTask} invoked`);
 };
 
 
