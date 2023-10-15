@@ -1,5 +1,10 @@
 import pg from "pg";
 import aws from "aws-sdk";
+import bluebird from "bluebird";
+
+
+aws.config.setPromisesDependency(bluebird);
+
 
 const { Pool } = pg;
 const pool = new Pool({
@@ -14,6 +19,8 @@ await pool.connect();
 
 const key = process.env.ENCRYPTION_KEY;
 const subTask = process.env.SUBTASK_LAMBDA;
+const s3 = new aws.S3({region: process.env.REGION});
+
 
 export const handler = async (event) => {
     let resp = {};
@@ -36,28 +43,9 @@ export const handler = async (event) => {
         console.log(resp)
 
         if (resp.statusCode == 200) {
-          const payload = {
-            "appointment_id": resp.body.appointment_id,
-            "insurance_imgs": body.insurance_imgs,
-            "additional_imgs": body.additional_imgs
+          for (let i; i < body.insurance_imgs.length; i++) {
+            await upload(body.insurance_imgs[i]);
           }
-
-          const lambda = new aws.Lambda({
-            region: process.env.REGION
-          });
-
-          lambda.invoke({
-            FunctionName: subTask,
-            InvocationType: 'Event',
-            LogType: 'tail',
-            Payload: JSON.stringify(payload)
-          }, function(error, data) {
-            if (error) {
-              console.error(error)
-            } else {
-              console.log(`invoke success - ${subTask}`)
-            }
-          });
         }
         break;
       
@@ -72,6 +60,18 @@ export const handler = async (event) => {
     }
   
     return resp
+  }
+
+  async function upload(data) {
+    const params = {
+      Bucket: S3_BUCKET,
+      Key:`${resp.body.appointment_id}.jpg`, // type is not required
+      Body: data,
+      ContentEncoding: 'base64', // required
+      ContentType: 'image/jpeg' // required. Notice the back ticks
+    }
+    const { Location, Key } = await s3.upload(params).promise();
+    console.log(Location)
   }
   
   async function fetchAppointmentList() {
