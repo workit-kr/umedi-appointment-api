@@ -10,6 +10,9 @@ const pool = new Pool({
 });
 await pool.connect();
 
+
+var key = process.env.ENCRYPTION_KEY;
+
 export const handler = async (event) => {
     let resp = {};
   
@@ -80,9 +83,11 @@ export const handler = async (event) => {
         (appointment_id, hospital_id, speciality, first_name, last_name, phone, email, gender, date_of_birth, claim_yn, candidate_dt1, candidate_dt2)
       values
         (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-          to_timestamp($11, 'YYYY-MM-DD AM HH12:MI')::timestamp at time zone 'Asia/Seoul',
-          to_timestamp($12, 'YYYY-MM-DD AM HH12:MI')::timestamp at time zone 'Asia/Seoul'
+          $1, $2, $3, $4, $5,
+          encode(encrypt(convert_to($6, 'utf8'), $7, 'aes'), 'base64'),
+          $8, $9, $10, $11,
+          to_timestamp($12, 'YYYY-MM-DD AM HH12:MI')::timestamp at time zone 'Asia/Seoul',
+          to_timestamp($13, 'YYYY-MM-DD AM HH12:MI')::timestamp at time zone 'Asia/Seoul'
         )
     `;
 
@@ -93,15 +98,15 @@ export const handler = async (event) => {
     if (r.user.claim_yn == 'y') { // claim 하는 경우
       params = [
         id, r.hospital_id, r.speciality,
-        r.user.first_name, r.user.last_name, r.user.phone, r.user.email,
-        r.user.gender, r.user.date_of_birth, r.user.claim_yn,
+        r.user.first_name, r.user.last_name, r.user.phone, key,
+        r.user.email, r.user.gender, r.user.date_of_birth, r.user.claim_yn,
         r.candidate_dt[0], r.candidate_dt[1] ? r.candidate_dt[1] : null
       ]
     } else {
       params = [
         id, r.hospital_id, r.speciality,
-        r.user.first_name, r.user.last_name, r.user.phone, r.user.email,
-        null, null, r.user.claim_yn,
+        r.user.first_name, r.user.last_name, r.user.phone, key,
+        r.user.email, null, null, r.user.claim_yn,
         r.candidate_dt[0], r.candidate_dt[1] ? r.candidate_dt[1] : null
       ]
     }
