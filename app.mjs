@@ -1,5 +1,5 @@
 import pg from "pg";
-import Lambda from "aws-sdk/lambda";
+import aws from "aws-sdk";
 import bluebird from "bluebird";
 
 
@@ -17,7 +17,7 @@ const pool = new Pool({
 await pool.connect();
 
 const key = process.env.ENCRYPTION_KEY;
-const lambda = new Lambda({
+const aws = new aws.Lambda({
   region: process.env.REGION
 });
 
