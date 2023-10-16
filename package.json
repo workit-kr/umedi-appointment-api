@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/workit-kr/umedi-appointment-api#readme",
   "dependencies": {
-    "aws-sdk": "^2.1473.0",
+    "aws-sdk": "^2.1474.0",
     "bluebird": "^3.7.2",
     "pg": "^8.11.3"
   },

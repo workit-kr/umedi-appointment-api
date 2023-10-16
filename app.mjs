@@ -1,5 +1,5 @@
 import pg from "pg";
-import aws from "aws-sdk";
+import Lambda from "aws-sdk/lambda";
 import bluebird from "bluebird";
 
 
@@ -16,10 +16,10 @@ const pool = new Pool({
 });
 await pool.connect();
 
-
 const key = process.env.ENCRYPTION_KEY;
-const s3 = new aws.S3({region: process.env.REGION});
-const S3_BUCKET = "umedi-image-bucket"
+const lambda = new Lambda({
+  region: process.env.REGION
+});
 
 
 export const handler = async (event) => {
@@ -43,11 +43,22 @@ export const handler = async (event) => {
         console.log(resp)
 
         if (resp.statusCode == 200) {
-          console.log("upload image")
-          console.log(body.insurance_imgs.length)
-          for (let i = 0; i < body.insurance_imgs.length; i++) {
-            await upload(body.insurance_imgs[i], i, resp.body.appointment_id);
-          }
+          console.log("invoke subtask lambda")
+          lambda.invoke({
+            FunctionName: process.env.SUBTASK,
+            InvocationType: 'Event',
+            Payload: JSON.stringify({
+                appointment_id: appointment_id,
+                insurance_imgs: body.insurance_imgs,
+                additional_imgs: body.additional_imgs
+            })
+          }, function ( error, data ) {
+            if (error) {
+              console.error(error);
+            } else {
+              console.log(data);
+            }
+          });
         }
         break;
       
