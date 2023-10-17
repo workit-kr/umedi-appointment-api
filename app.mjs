@@ -41,8 +41,6 @@ export const handler = async (event) => {
 
         if (resp.statusCode == 200) {
           console.log("invoke subtask lambda")
-          console.log(JSON.parse(resp.body))
-
           await lambda.invoke({
             FunctionName: 'umedi-subtask',
             InvocationType: 'Event',
@@ -58,6 +56,7 @@ export const handler = async (event) => {
           }).promise()
         }
         resp = buildResponse(result.statusCode, result.data)
+        console.log(resp)
         break;
       
       // upload images
