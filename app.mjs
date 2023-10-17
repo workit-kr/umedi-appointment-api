@@ -142,7 +142,7 @@ export const handler = async (event) => {
     if (result.statusCode == 200) {
       return {
         statusCode: 200,
-        data: {appointment_id: appointment_id}
+        data: {appointment_id: id}
       }
     }
     return result
