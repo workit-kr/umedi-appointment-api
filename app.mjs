@@ -17,7 +17,7 @@ const pool = new Pool({
 await pool.connect();
 
 const key = process.env.ENCRYPTION_KEY;
-const aws = new aws.Lambda({
+const lambda = new aws.Lambda({
   region: process.env.REGION
 });
 
