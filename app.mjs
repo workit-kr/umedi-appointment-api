@@ -39,7 +39,7 @@ export const handler = async (event) => {
         result = await addAppointment(body)
         console.log(result)
 
-        if (resp.statusCode == 200) {
+        if (result.statusCode == 200) {
           console.log("invoke subtask lambda")
           await lambda.invoke({
             FunctionName: 'umedi-subtask',
