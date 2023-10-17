@@ -46,13 +46,10 @@ export const handler = async (event) => {
             InvocationType: 'Event',
             LogType: 'Tail',
             Payload: JSON.stringify({
-              appointment_id: result.data.appointment_id
+              appointment_id: result.data.appointment_id,
+              insurance_imgs: body.insurance_imgs,
+              additional_imgs: body.additional_imgs
             })
-            // Payload: JSON.stringify({
-            //     appointment_id: resp.body.appointment_id,
-            //     insurance_imgs: body.insurance_imgs,
-            //     additional_imgs: body.additional_imgs
-            // })
           }).promise()
         }
         resp = buildResponse(result.statusCode, result.data)
