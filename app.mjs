@@ -18,8 +18,8 @@ await pool.connect();
 
 const key = process.env.ENCRYPTION_KEY;
 const lambda = new aws.Lambda({
-  region: process.env.REGION
-});
+  region: 'ap-northeast-2'
+})
 
 
 export const handler = async (event) => {
@@ -45,7 +45,7 @@ export const handler = async (event) => {
         if (resp.statusCode == 200) {
           console.log("invoke subtask lambda")
           lambda.invoke({
-            FunctionName: process.env.SUBTASK,
+            FunctionName: 'umedi-subtask',
             InvocationType: 'Event',
             Payload: JSON.stringify({
                 appointment_id: resp.body.appointment_id,
