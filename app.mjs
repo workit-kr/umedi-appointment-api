@@ -45,9 +45,7 @@ export const handler = async (event) => {
             FunctionName: 'umedi-subtask',
             InvocationType: 'Event',
             LogType: 'Tail',
-            Payload: JSON.stringify({
-              appointment_id: result.data.appointment_id
-            })
+            Payload: '{}'
             // Payload: JSON.stringify({
             //     appointment_id: resp.body.appointment_id,
             //     insurance_imgs: body.insurance_imgs,
