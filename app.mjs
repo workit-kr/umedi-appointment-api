@@ -24,36 +24,31 @@ const lambda = new aws.Lambda({
 
 export const handler = async (event) => {
     let resp = {};
+    let result = {};
   
     switch (event.httpMethod) {
       // get appointments
       case "GET":
-        
-        const path = event.resource
-
-        if (path == '/appointment') {
-          resp = fetchAppointmentList()
-        }
+        result = fetchAppointmentList();
+        resp = buildResponse(result.statusCode, result.data);
         break;
       
       // add appointments
       case "PUT":
         const body = JSON.parse(event.body)
-        resp = await addAppointment(body)
+        result = await addAppointment(body)
         console.log(resp)
 
         if (resp.statusCode == 200) {
           console.log("invoke subtask lambda")
-          
-          appointment_id = JSON.parse(resp.body).appointment_id;
-          console.log(appointment_id);
+          console.log(JSON.parse(resp.body))
 
           await lambda.invoke({
             FunctionName: 'umedi-subtask',
             InvocationType: 'Event',
             LogType: 'Tail',
             Payload: JSON.stringify({
-              appointment_id: resp.body.appointment_id
+              appointment_id: result.data.appointment_id
             })
             // Payload: JSON.stringify({
             //     appointment_id: resp.body.appointment_id,
@@ -62,6 +57,7 @@ export const handler = async (event) => {
             // })
           }).promise()
         }
+        resp = buildResponse(result.statusCode, result.data)
         break;
       
       // upload images
@@ -75,25 +71,6 @@ export const handler = async (event) => {
     }
   
     return resp
-  }
-
-  async function upload(data, i, appointment_id) {
-    const params = {
-      Bucket: S3_BUCKET,
-      Key:`${appointment_id}_${i}.jpg`, // type is not required
-      Body: data,
-      ACL: 'public-read',
-      ContentEncoding: 'base64', // required
-      ContentType: 'image/jpeg' // required. Notice the back ticks
-    }
-    console.log(`upload ${i} image`)
-    try {
-      const { Location, Key } = await s3.putObject(params).promise();
-      console.log(Location)
-    }
-    catch (error) {
-      console.log(error)
-    }
   }
   
   async function fetchAppointmentList() {
@@ -165,13 +142,7 @@ export const handler = async (event) => {
     }
 
     const result = await execute_query(query, params, false);
-    let resp = {};
-    if (result.statusCode == 200) {
-      resp = buildResponse(200, {"appointment_id": id});
-    } else {
-      resp = result
-    }
-    return resp
+    return result
   }
 
   async function execute_query(query, params, raw) {
@@ -189,15 +160,24 @@ export const handler = async (event) => {
       }
   
       if (result.rowCount == 0) {
-        return buildResponse(404, {"message": "no items"})
+        return {
+          statusCode: 404,
+          message: {"message": "no result"}
+        }
       };
   
-      return buildResponse(200, result.rows)
+      return {
+        statusCode: 200,
+        message: {"data": result.rows}
+      }
     }
     catch (error) {
       console.error('server error');
       console.error(error)
-      return buildResponse(500, {"message": "server error"})
+      return {
+        statusCode: 500,
+        message: {"message": "server error"}
+      }
     }
   }
   
