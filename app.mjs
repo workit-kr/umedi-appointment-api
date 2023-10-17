@@ -48,7 +48,7 @@ export const handler = async (event) => {
             FunctionName: process.env.SUBTASK,
             InvocationType: 'Event',
             Payload: JSON.stringify({
-                appointment_id: appointment_id,
+                appointment_id: resp.body.appointment_id,
                 insurance_imgs: body.insurance_imgs,
                 additional_imgs: body.additional_imgs
             })
