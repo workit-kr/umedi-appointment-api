@@ -44,21 +44,17 @@ export const handler = async (event) => {
 
         if (resp.statusCode == 200) {
           console.log("invoke subtask lambda")
-          lambda.invoke({
+          await lambda.invoke({
             FunctionName: 'umedi-subtask',
             InvocationType: 'Event',
-            Payload: JSON.stringify({
-                appointment_id: resp.body.appointment_id,
-                insurance_imgs: body.insurance_imgs,
-                additional_imgs: body.additional_imgs
-            })
-          }, function ( error, data ) {
-            if (error) {
-              console.error(error);
-            } else {
-              console.log(data);
-            }
-          });
+            LogType: 'Tail',
+            Payload: {}
+            // Payload: JSON.stringify({
+            //     appointment_id: resp.body.appointment_id,
+            //     insurance_imgs: body.insurance_imgs,
+            //     additional_imgs: body.additional_imgs
+            // })
+          }).promise()
         }
         break;
       
