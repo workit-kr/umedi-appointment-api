@@ -37,7 +37,7 @@ export const handler = async (event) => {
       case "PUT":
         const body = JSON.parse(event.body)
         result = await addAppointment(body)
-        console.log(resp)
+        console.log(result)
 
         if (resp.statusCode == 200) {
           console.log("invoke subtask lambda")
