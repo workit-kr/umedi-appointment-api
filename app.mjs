@@ -141,6 +141,12 @@ export const handler = async (event) => {
     }
 
     const result = await execute_query(query, params, false);
+    if (result.statusCode == 200) {
+      return {
+        statusCode: 200,
+        data: {appointment_id: appointment_id}
+      }
+    }
     return result
   }
 
@@ -161,13 +167,13 @@ export const handler = async (event) => {
       if (result.rowCount == 0) {
         return {
           statusCode: 404,
-          message: {"message": "no result"}
+          data: {"message": "no result"}
         }
       };
   
       return {
         statusCode: 200,
-        message: {"data": result.rows}
+        data: result.rows
       }
     }
     catch (error) {
@@ -175,7 +181,7 @@ export const handler = async (event) => {
       console.error(error)
       return {
         statusCode: 500,
-        message: {"message": "server error"}
+        data: {"message": "server error"}
       }
     }
   }
