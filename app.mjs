@@ -42,7 +42,7 @@ export const handler = async (event) => {
         if (result.statusCode == 200) {
           console.log("invoke subtask lambda")
           await lambda.invoke({
-            FunctionName: 'umedi-subtask',
+            FunctionName: process.env.SUBTASK,
             InvocationType: 'Event',
             LogType: 'Tail',
             Payload: JSON.stringify({
