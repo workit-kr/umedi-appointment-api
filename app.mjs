@@ -156,8 +156,8 @@ export const handler = async (event) => {
         statusCode: 200,
         data: {
           appointment_id: id,
-          hospital: booking_info.hospital,
-          speciality: booking_info.speciality,
+          hospital: booking_info[0].hospital,
+          speciality: booking_info[0].speciality,
           first_name: r.user.first_name,
           last_name: r.user.last_name,
           phone: r.user.phone,
