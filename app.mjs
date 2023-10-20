@@ -133,10 +133,10 @@ export const handler = async (event) => {
       ]
     }
 
-    const result = await execute_query(query, params, true);
+    const result = execute_query(query, params, true);
 
     const booking_info_param = [r.speciality, r.hospital_id]
-    const booking_info = await execute_query(`
+    const booking_info = execute_query(`
           select
           s.name as speciality,
           h.name as hospital
