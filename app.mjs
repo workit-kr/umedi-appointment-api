@@ -48,7 +48,7 @@ export const handler = async (event) => {
             Payload: JSON.stringify(result.data)
           }).promise()
         }
-        resp = buildResponse(result.statusCode, {appointment_id: result.data.appointment_id})
+        resp = buildResponse(result.statusCode, {message: "ok"})
         console.log(resp)
         break;
       
