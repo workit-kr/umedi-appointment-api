@@ -36,7 +36,7 @@ export const handler = async (event) => {
       // add appointments
       case "PUT":
         const body = JSON.parse(event.body)
-        result = addAppointment(body)
+        result = await addAppointment(body)
         console.log(result)
 
         if (result.statusCode == 200) {
@@ -48,7 +48,7 @@ export const handler = async (event) => {
             Payload: JSON.stringify(result.data)
           }).promise()
         }
-        resp = buildResponse(result.statusCode, {message: "ok"})
+        resp = buildResponse(result.statusCode, {appointment_id: result.data.appointment_id})
         console.log(resp)
         break;
       
@@ -89,14 +89,14 @@ export const handler = async (event) => {
     return result
   }
 
-  function addAppointment(r) {
+  async function addAppointment(r) {
     let updateQuery = `
       update umedi.sequences
       set id = id + 1
       returning id
     `;
 
-    const updateResult = execute_query(updateQuery, null, true);
+    const updateResult = await execute_query(updateQuery, null, true);
     const id = updateResult[0].id.toString();
 
     let params = [];
@@ -133,14 +133,30 @@ export const handler = async (event) => {
       ]
     }
 
-    const result = execute_query(query, params, true);
+    const result = await execute_query(query, params, false);
+
+    const booking_info_param = [r.speciality, r.hospital_id]
+    const booking_info = await execute_query(`
+          select
+          s.name as speciality,
+          h.name as hospital
+      from
+          hospital h,
+          speciality s
+      where
+          (h.speciality_1 = s.code or h.speciality_2 = s.code)
+          and s.code = $1
+          and h.id = $2`, booking_info_param, true);
+        
+    console.log(booking_info)
+
     if (result.statusCode == 200) {
       return {
         statusCode: 200,
         data: {
           appointment_id: id,
-          hospital: r.hospital_id,
-          speciality: r.speciality,
+          hospital: booking_info.hospital,
+          speciality: booking_info.speciality,
           first_name: r.user.first_name,
           last_name: r.user.last_name,
           phone: r.user.phone,
@@ -158,14 +174,14 @@ export const handler = async (event) => {
     return result
   }
 
-  function execute_query(query, params, raw) {
+  async function execute_query(query, params, raw) {
     let result = {}
 
     try {
       if (params == null) {
-        result = pool.query(query);
+        result = await pool.query(query);
       } else {
-        result = pool.query(query, params);
+        result = await pool.query(query, params);
       }
 
       if (raw) {
