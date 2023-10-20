@@ -36,7 +36,7 @@ export const handler = async (event) => {
       // add appointments
       case "PUT":
         const body = JSON.parse(event.body)
-        result = await addAppointment(body)
+        result = addAppointment(body)
         console.log(result)
 
         if (result.statusCode == 200) {
@@ -89,14 +89,14 @@ export const handler = async (event) => {
     return result
   }
 
-  async function addAppointment(r) {
+  function addAppointment(r) {
     let updateQuery = `
       update umedi.sequences
       set id = id + 1
       returning id
     `;
 
-    const updateResult = await execute_query(updateQuery, null, true);
+    const updateResult = execute_query(updateQuery, null, true);
     const id = updateResult[0].id.toString();
 
     let params = [];
@@ -133,7 +133,7 @@ export const handler = async (event) => {
       ]
     }
 
-    const result = await execute_query(query, params, true);
+    const result = execute_query(query, params, true);
     if (result.statusCode == 200) {
       return {
         statusCode: 200,
@@ -158,14 +158,14 @@ export const handler = async (event) => {
     return result
   }
 
-  async function execute_query(query, params, raw) {
+  function execute_query(query, params, raw) {
     let result = {}
 
     try {
       if (params == null) {
-        result = await pool.query(query);
+        result = pool.query(query);
       } else {
-        result = await pool.query(query, params);
+        result = pool.query(query, params);
       }
 
       if (raw) {
