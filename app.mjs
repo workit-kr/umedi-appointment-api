@@ -135,9 +135,8 @@ export const handler = async (event) => {
 
     const result = await execute_query(query, params, false);
 
-    const booking_info_param = [r.speciality, r.hospital_id]
-    const booking_info = await execute_query(`
-          select
+    const booking_query = `
+      select
           s.name as speciality,
           h.name as hospital
       from
@@ -145,9 +144,11 @@ export const handler = async (event) => {
           speciality s
       where
           (h.speciality_1 = s.code or h.speciality_2 = s.code)
-          and s.code = $1
-          and h.id = $2`, booking_info_param, true);
-        
+          and s.code = ${r.hospital_id}
+          and h.id = ${r.speciality}
+    `
+    const booking_info = await execute_query(booking_query, null, true);
+    console.log(booking_query)
     console.log(booking_info)
 
     if (result.statusCode == 200) {
