@@ -45,14 +45,10 @@ export const handler = async (event) => {
             FunctionName: process.env.SUBTASK,
             InvocationType: 'Event',
             LogType: 'Tail',
-            Payload: JSON.stringify({
-              appointment_id: result.data.appointment_id,
-              insurance_imgs: body.insurance_imgs,
-              additional_imgs: body.additional_imgs
-            })
+            Payload: JSON.stringify(result.data)
           }).promise()
         }
-        resp = buildResponse(result.statusCode, result.data)
+        resp = buildResponse(result.statusCode, {appointment_id: result.data.appointment_id})
         console.log(resp)
         break;
       
@@ -141,7 +137,20 @@ export const handler = async (event) => {
     if (result.statusCode == 200) {
       return {
         statusCode: 200,
-        data: {appointment_id: id}
+        data: {
+          appointment_id: id,
+          first_name: r.user.first_name,
+          last_name: r.user.last_name,
+          phone: r.user.phone,
+          email: r.user.email,
+          candidate_dt1: r.candidate_dt[0],
+          candidate_dt2: r.candidate_dt[1],
+          claim_yn: r.user.claim_yn,
+          gender: r.user.gender ? r.user.gender : "",
+          date_of_birth: r.user.date_of_birth ? r.user.date_of_birth : "",
+          insurance_imgs: r.user.insurance_imgs,
+          additional_imgs: r.user.additional_imgs
+        }
       }
     }
     return result
