@@ -163,7 +163,7 @@ export const handler = async (event) => {
           phone: r.user.phone,
           email: r.user.email,
           candidate_dt1: r.candidate_dt[0],
-          candidate_dt2: r.candidate_dt[1],
+          candidate_dt2: r.candidate_dt[1] ? r.candidate_dt[1] : "",
           claim_yn: r.user.claim_yn,
           gender: r.user.gender ? r.user.gender : "",
           date_of_birth: r.user.date_of_birth ? r.user.date_of_birth : "",
