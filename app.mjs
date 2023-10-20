@@ -144,8 +144,8 @@ export const handler = async (event) => {
           speciality s
       where
           (h.speciality_1 = s.code or h.speciality_2 = s.code)
-          and s.code = ${r.hospital_id}
-          and h.id = ${r.speciality}
+          and s.code = '${r.speciality}'
+          and h.id = ${r.hospital_id}
     `
     const booking_info = await execute_query(booking_query, null, true);
     console.log(booking_query)
