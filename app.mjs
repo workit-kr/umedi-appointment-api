@@ -147,6 +147,8 @@ export const handler = async (event) => {
           (h.speciality_1 = s.code or h.speciality_2 = s.code)
           and s.code = $1
           and h.id = $2`, booking_info_param, false);
+        
+    console.log(booking_info)
 
     if (result.statusCode == 200) {
       return {
