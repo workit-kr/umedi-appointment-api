@@ -53,7 +53,13 @@ export const handler = async (event) => {
             method: 'POST',
             body: JSON.stringify(result.data)
           }
-          await request.post(options).promise()
+          request.post(options, function (error, response) {
+            if (error) {
+              console.error(error)
+            } else {
+              console.log(response)
+            }
+          });
         }
         resp = buildResponse(result.statusCode, {appointment_id: result.data.appointment_id})
         console.log(resp)
