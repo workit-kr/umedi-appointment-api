@@ -102,14 +102,15 @@ export const handler = async (event) => {
     let params = [];
     let query = `
       insert into umedi.appointment
-        (appointment_id, hospital_id, speciality, first_name, last_name, phone, email, gender, date_of_birth, claim_yn, candidate_dt1, candidate_dt2)
+        (appointment_id, hospital_id, speciality, first_name, last_name, phone, email, gender, date_of_birth, claim_yn, candidate_dt1, candidate_dt2, additional_info)
       values
         (
           $1, $2, $3, $4, $5,
           encode(encrypt(convert_to($6, 'utf8'), $7, 'aes'), 'base64'), $8, $9,
           encode(encrypt(convert_to($10, 'utf8'), $7, 'aes'), 'base64'), $11,
           to_timestamp($12, 'YYYY-MM-DD AM HH12:MI')::timestamp at time zone 'Asia/Seoul',
-          to_timestamp($13, 'YYYY-MM-DD AM HH12:MI')::timestamp at time zone 'Asia/Seoul'
+          to_timestamp($13, 'YYYY-MM-DD AM HH12:MI')::timestamp at time zone 'Asia/Seoul',
+          $14
         )
     `;
 
@@ -122,14 +123,16 @@ export const handler = async (event) => {
         id, r.hospital_id, r.speciality,
         r.user.first_name, r.user.last_name, r.user.phone, key,
         r.user.email, r.user.gender, r.user.date_of_birth, r.user.claim_yn,
-        r.candidate_dt[0], r.candidate_dt[1] ? r.candidate_dt[1] : null
+        r.candidate_dt[0], r.candidate_dt[1] ? r.candidate_dt[1] : null,
+        r.user.additional_info
       ]
     } else {
       params = [
         id, r.hospital_id, r.speciality,
         r.user.first_name, r.user.last_name, r.user.phone, key,
         r.user.email, null, null, r.user.claim_yn,
-        r.candidate_dt[0], r.candidate_dt[1] ? r.candidate_dt[1] : null
+        r.candidate_dt[0], r.candidate_dt[1] ? r.candidate_dt[1] : null,
+        r.user.additional_info
       ]
     }
 
@@ -167,6 +170,7 @@ export const handler = async (event) => {
           claim_yn: r.user.claim_yn,
           gender: r.user.gender ? r.user.gender : "",
           date_of_birth: r.user.date_of_birth ? r.user.date_of_birth : "",
+          additional_info: r.user.additional_info,
           insurance_imgs: r.user.insurance_imgs,
           additional_imgs: r.user.additional_imgs
         }
