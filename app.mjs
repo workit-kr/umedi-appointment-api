@@ -1,6 +1,7 @@
 import pg from "pg";
 import aws from "aws-sdk";
 import bluebird from "bluebird";
+import request from "request";
 
 
 aws.config.setPromisesDependency(bluebird);
@@ -41,12 +42,18 @@ export const handler = async (event) => {
 
         if (result.statusCode == 200) {
           console.log("invoke subtask lambda")
-          await lambda.invoke({
-            FunctionName: process.env.SUBTASK,
-            InvocationType: 'Event',
-            LogType: 'Tail',
-            Payload: JSON.stringify(result.data)
-          }).promise()
+          // await lambda.invoke({
+          //   FunctionName: process.env.SUBTASK,
+          //   InvocationType: 'Event',
+          //   LogType: 'Tail',
+          //   Payload: JSON.stringify(result.data)
+          // }).promise()
+          const options = {
+            uri: 'https://umedi-booking.com/dev/task',
+            method: 'POST',
+            body: JSON.stringify(result.data)
+          }
+          await request.post(options).promise()
         }
         resp = buildResponse(result.statusCode, {appointment_id: result.data.appointment_id})
         console.log(resp)
