@@ -183,7 +183,7 @@ export const handler = async (event) => {
           claim_yn: r.user.claim_yn,
           gender: r.user.gender ? r.user.gender : "",
           date_of_birth: r.user.date_of_birth ? r.user.date_of_birth : "",
-          additional_info: r.user.additional_info,
+          additional_info: r.user.additional_info ? r.user.additional_info : "",
           insurance_imgs: r.user.insurance_imgs,
           additional_imgs: r.user.additional_imgs
         }
